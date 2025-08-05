@@ -26,6 +26,7 @@
 - **Folder organization**: Structure code using logical folders (e.g., `utils/`, `shared/`, `types/`, `services/`).
 - **Layer separation**: Keep the presentation layer separate from the functional/business logic layer.
 - **Domain grouping**: Group related functionality together while maintaining clear boundaries.
+- **Import paths**: Use TypeScript path mapping with @ based imports and set up the tsconfig with paths.
 
 ## TypeScript Configuration Rules (tsconfig.json)
 
