@@ -27,6 +27,7 @@
 - **Layer separation**: Keep the presentation layer separate from the functional/business logic layer.
 - **Domain grouping**: Group related functionality together while maintaining clear boundaries.
 - **Import paths**: Use TypeScript path mapping with @ based imports and set up the tsconfig with paths.
+- **Code Comments**: Comments should be used sparingly, only when absolutely needed, It should be obvious from reading the code itself what it does.
 
 ## TypeScript Configuration Rules (tsconfig.json)
 
