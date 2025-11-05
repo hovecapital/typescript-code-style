@@ -1,72 +1,313 @@
-# TypeScript Coding Rules
+# TypeScript Development Flow for Claude Code
 
-## Important Notes
+Spec-driven development workflow combining OpenSpec, Superpowers, and MCPs for predictable, high-quality TypeScript applications.
 
-- Use concise language
-- Comments should be rare, code should be self-documenting
-- Don't use emojis
-- User runs npm commands, instruct and await
-- npm run dev will normally already be running
-- Local development environment
-- Use Context7 MCP to read library documentation
+## Quick Start
 
-## Type Safety Rules
+```bash
+# Install OpenSpec
+npm install -g @fission-ai/openspec@latest
 
-- **No any**: Do not use `any` or `as any` unless data is truly runtime in nature. Use Yup schemas for runtime validation when unavoidable
-- **Explicit function signatures**: All functions must have parameter types and return types
-- **Use type over interface**: Use `type` for data shapes, `interface` only for actual contracts/services that may be implemented
-- **Strict null checks**: Handle null/undefined cases explicitly
-- **Type guards**: Use type predicates and guards for runtime type checking
-- **Branded types**: Use branded types for domain-specific values
+# Initialize in your project
+cd your-typescript-project
+openspec init
 
-## Code Quality Rules
+# Install Superpowers in Claude Code
+/plugin marketplace add obra/superpowers-marketplace
+/plugin install superpowers@superpowers-marketplace
 
-- **No code repetition**: Extract repeated logic into reusable functions
-- **Descriptive naming**: Use clear, descriptive names for variables, functions, and types
-- **Single responsibility**: Functions should handle single actions and be testable in isolation
-- **No long functions**: Keep functions short and focused, break complex logic into smaller functions
-- **Explicit returns**: Always explicitly return values from functions
-- **Fail early**: Validate inputs and fail early with clear error messages
+# Copy configuration
+cp settings_local.json ~/.claude-code/settings_local.json
+cp CLAUDE.md /path/to/your-project/
 
-## Advanced Type Patterns
+# Start building
+/openspec:proposal <your-feature-name>
+```
 
-- **Conditional types**: Use for flexible, type-safe APIs
-- **Mapped types**: Use for type transformations
-- **Template literal types**: Use for string manipulation at type level
-- **Discriminated unions**: Use for state machines and variants
-- **Const assertions**: Use `as const` for literal types instead of manual definitions
-- **Utility types**: Leverage built-in utilities (Pick, Omit, Partial, etc.) instead of manual definitions
-- **Higher-kinded types**: Simulate when needed for advanced patterns
-- **Recursive type definitions**: Use for nested data structures
+## What You Get
 
-## Project Structure Rules
+✅ Spec-driven workflow - Agree on requirements before coding
+✅ Automatic TDD - Test-first development built-in
+✅ Systematic debugging - 4-phase root cause process
+✅ Current documentation - Up-to-date library docs via Context7
+✅ Strict TypeScript - Full type safety, no any
+✅ Safe permissions - Work efficiently without constant prompts
 
-- **Shared types separation**: Use separate folders/files for shared types across modules
-- **Folder organization**: Structure using logical folders (utils/, shared/, types/, services/)
-- **Layer separation**: Keep presentation separate from functional/business logic
-- **Domain grouping**: Group related functionality together with clear boundaries
-- **Import paths**: Use @ based imports with TypeScript path mapping in tsconfig
+## The Files
 
-## Error Handling
+| File | Purpose | When to Use |
+|------|---------|-------------|
+| SETUP.md | Installation guide | Once per project setup |
+| CLAUDE.md | Coding guidelines | Reference during development |
+| QUICKREF.md | Daily commands | Keep open while coding |
+| SUMMARY.md | How it all works | Understanding the flow |
+| settings_local.json | Claude Code config | Copy to ~/.claude-code/ |
 
-- **Result types**: Use Result<T, E> patterns for expected errors
-- **Never type**: Use for exhaustive checks
-- **Type-safe errors**: Create typed error classes
-- **Typed exceptions**: Functions that can fail should return Result types or throw typed errors
+## The Workflow
 
-## Build Configuration
+### 1. Propose
 
-- **Strict mode**: Enable all strict compiler flags
-- **Path mapping**: Configure @ imports in tsconfig paths
-- **Source maps**: Enable for debugging
-- **Type checking**: Pre-commit type checking
-- **No emit on error**: Fail builds on type errors
+```
+/openspec:proposal Add user authentication
+```
 
-## Testing
+Creates structured proposal with specs and tasks.
 
-- **Type-safe tests**: Type test fixtures and mocks
-- **Test utilities**: Create typed test helpers
-- **Integration tests**: Type API responses
-- **Type coverage**: Track type coverage metrics
+### 2. Refine
 
----
+```
+openspec show add-user-authentication
+```
+
+Review and iterate until specs are clear.
+
+### 3. Implement
+
+```
+/openspec:apply add-user-authentication
+```
+
+Superpowers guides TDD automatically. Context7 provides docs.
+
+### 4. Archive
+
+```
+/openspec:archive add-user-authentication --yes
+```
+
+Merges approved specs, archives change.
+
+## Core Technologies
+
+### OpenSpec
+
+Spec-driven development - agree on requirements before code.
+
+- Proposals capture intent
+- Tasks break down work
+- Spec deltas show changes
+- Archive maintains history
+
+### Superpowers
+
+Proven workflows activate automatically:
+
+- TDD - Red-green-refactor cycle
+- Debugging - Systematic root cause analysis
+- Verification - Ensure work is complete
+- Planning - Break down complex features
+
+### Context7 MCP
+
+Up-to-date library documentation:
+
+```
+"Get TypeScript utility types docs"
+"Show Zod validation examples"
+"Get tRPC router setup guide"
+```
+
+## Development Standards
+
+### TypeScript Strict Mode
+
+```typescript
+// Type-safe data models
+type User = {
+  readonly id: string;
+  email: string;
+  status: UserStatus;
+};
+
+// Discriminated unions
+type Result<T, E> = 
+  | { success: true; data: T }
+  | { success: false; error: E };
+
+// Branded types
+type UserId = string & { readonly __brand: 'UserId' };
+
+// Type guards
+function isUser(value: unknown): value is User {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    'email' in value
+  );
+}
+```
+
+### Architecture Pattern
+
+```
+Controllers/Routes → Services → Repositories → Data Layer
+        ↓               ↓
+    Validators       DTOs/Types
+```
+
+- Controllers/Routes: Thin, delegate to services
+- Services: Business logic
+- Repositories: Data access layer
+- Validators: Runtime validation (Yup/Zod)
+- DTOs: Type-safe data transfer
+- Types: Shared type definitions
+
+### Testing
+
+```typescript
+// Focus on meaningful integration tests
+describe('User Registration', () => {
+  it('should create user with valid data', async () => {
+    const result = await userService.register({
+      email: 'user@test.com',
+      password: 'password123',
+    });
+
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.email).toBe('user@test.com');
+    }
+  });
+});
+```
+
+Focus on meaningful tests, not coverage percentages.
+
+## Example Session
+
+**Developer:** Create a feature for user profile editing
+
+**Claude:** I'll create an OpenSpec proposal for user profile editing.
+
+```
+/openspec:proposal add-profile-editing
+
+✓ Created openspec/changes/add-profile-editing/
+✓ proposal.md - Intent and approach
+✓ tasks.md - Implementation checklist  
+✓ specs/users/spec.md - Profile spec delta
+
+Ready to review. Use: openspec show add-profile-editing
+```
+
+**Developer:** Looks good, let's implement
+
+**Claude:** Starting implementation for add-profile-editing.
+Superpowers TDD skill activated.
+
+```
+[Gets documentation via Context7]
+"Get Zod validation schema examples"
+
+[Implements following CLAUDE.md standards]
+✓ Task 1.1: Create profile types
+✓ Task 1.2: Add ProfileService with Result types
+✓ Task 1.3: Create validation schemas
+✓ Task 2.1: Write unit tests
+✓ Task 2.2: Create API routes
+
+All tasks complete. Tests passing.
+```
+
+**Developer:** Archive the change
+
+**Claude:**
+
+```
+/openspec:archive add-profile-editing --yes
+
+✓ Specs merged to openspec/specs/users/
+✓ Change archived
+✓ Ready for next feature
+```
+
+## Safety Features
+
+### Allowed Operations
+
+✅ npm/yarn/pnpm commands
+✅ Git operations (status, diff, commit)
+✅ File viewing (cat, ls, grep)
+✅ Package management
+✅ Code quality tools (eslint, prettier)
+
+### Blocked Operations
+
+❌ System-wide deletions (rm -rf /)
+❌ Destructive disk ops (dd, mkfs)
+❌ Piped execution (curl | bash)
+❌ Environment access (.env files)
+
+## Pre-Completion Checklist
+
+Before marking work done:
+
+- [ ] Strict mode enabled in tsconfig.json
+- [ ] No `any` types without Yup/Zod validation
+- [ ] Type hints on all functions
+- [ ] Runtime validation for external data
+- [ ] Tests written for business logic
+- [ ] Result types for error handling
+- [ ] OpenSpec change archived
+- [ ] Superpowers verification passed
+
+## Common Commands
+
+### Daily Workflow
+
+```bash
+/openspec:proposal <feature>      # Start feature
+openspec show <feature>            # Review specs
+/openspec:apply <feature>          # Implement
+/openspec:archive <feature> --yes  # Complete
+```
+
+### Superpowers
+
+```bash
+/superpowers:brainstorm    # Design refinement
+/superpowers:write-plan    # Create plan
+/superpowers:execute-plan  # Batch execution
+```
+
+### Development
+
+```bash
+npm run dev          # Start dev server
+npm run test         # Run tests
+npm run build        # Production build
+npm run type-check   # TypeScript checking
+```
+
+## Documentation
+
+- **SETUP.md** - Complete installation and configuration
+- **CLAUDE.md** - Full coding guidelines and patterns
+- **QUICKREF.md** - Daily command reference
+- **SUMMARY.md** - How everything works together
+
+## Philosophy
+
+- Write specs before code
+- Follow proven workflows
+- Enforce quality systematically
+
+This setup embodies:
+
+- Deterministic over unpredictable
+- Systematic over ad-hoc
+- Typed over dynamic
+- Tested over hoped
+- Documented over assumed
+
+## Resources
+
+- [OpenSpec](https://github.com/fission-codes/openspec)
+- [Superpowers](https://github.com/obra/superpowers)
+- [Context7 MCP](https://github.com/context7/mcp)
+- [TypeScript Docs](https://www.typescriptlang.org/docs/)
+
+## License
+
+MIT
